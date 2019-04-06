@@ -1,5 +1,5 @@
 import click
-from ips import patch, show_patches
+import ips as PyPS
 import os
 
 
@@ -12,13 +12,13 @@ def ips_patch():
 @click.option("--rom", "-r", required=True, prompt="Path to ROM")
 @click.option("--ips", "-i", required=True, prompt="Path to IPS")
 @click.option("--backup/--no-backup", "-b/-B", default=True)
-def patch(rom, ips, backup):
+def patch(rom, ips, backup=True):
     if not backup:
         click.confirm(f"The ROM {rom} will be partly overwritten; this process cannot be undone and it is *highly* "
                       f"recommended that you make a backup. Are you sure you wish to proceed without one?",
                       abort=True)
 
-    info = patch(rom, ips, backup)
+    info = PyPS.patch(rom, ips, backup)
     click.echo(info)
 
 
@@ -36,6 +36,6 @@ def restore_rom(rom):
 @ips_patch.command("patches")
 @click.option("--ips", "-i", required=True, prompt=True)
 def patches(ips):
-    show_patches(ips)
+    PyPS.show_patches(ips)
 
 

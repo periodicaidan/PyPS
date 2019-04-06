@@ -120,7 +120,7 @@ def patch(rom_file, ips_file, backup):
             if length != 0:  # Normal case: Write the patch payload into the ROM file
                 data = ips.read(length)
                 rom.write(data)
-                echo(f"{length} bytes overwritten at memory location {offset}")
+                echo(f"{length} bytes overwritten at memory location {hex(offset)}")
             else:  # Special case: copy a byte into the ROM file some number of times
                 # Get the 2-byte sequence for the number of times the byte should be written into the ROM
                 data = ips.read(2)
@@ -131,7 +131,7 @@ def patch(rom_file, ips_file, backup):
                 # Read the byte from the IPS and copy it into the rom `length` number of times
                 byte = ips.read(1)
                 rom.write(byte * length)
-                echo(f"{length} bytes overwritten at memory location {offset}")
+                echo(f"{length} bytes overwritten at memory location {hex(offset)}")
 
 
 def show_patches(ips_file):
