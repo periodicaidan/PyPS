@@ -57,7 +57,7 @@ the ROM file you would like to restore.
 
 ## License
 
-Copyright Ⓒ Aidan T. Manning
+Copyright &copy; Aidan T. Manning
 
 Permission is hereby granted, free of charge, to any person obtaining a 
 copy of this software and associated documentation files (the 
