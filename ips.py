@@ -12,7 +12,7 @@ def read(ips_file):
         print(f"{ips_file} is not readable and writable. Please set the appropriate permissions.")
         raise StopIteration
 
-    if not ips_file.split(".")[-1] != "ips":
+    if ips_file.split(".")[-1] != "ips":
         print(f"{ips_file} is not an IPS file (proper extension is .ips)")
         raise StopIteration
 
@@ -21,12 +21,8 @@ def read(ips_file):
         if header != b"PATCH":
             print(f"IPS file header invalid: {header}")
             raise StopIteration
-
-        while True:
-            data = ips.read(3)
-            if data == b"" or data == b"EOF":
-                raise StopIteration
-
+        data = ips.read(3)
+        while data != "" and data != b"EOF":
             offset = 0
             for _, c in enumerate(data):
                 offset = offset * 256 + int(c)
@@ -48,16 +44,29 @@ def read(ips_file):
                 data = ips.read(length)
 
             yield offset, data
+            data = ips.read(3)
 
 
 def patch2(rom_file, ips_file, backup):
+    if not os.access(rom_file, os.F_OK):
+        return f"ROM file {rom_file} not found"
+
+    if not (os.access(rom_file, os.R_OK) and os.access(os.W_OK)):
+        return f"ROM file {rom_file} is not readable and/or writeable. Please set the appropriate permissions."
+
     if backup:
         shutil.copyfile(rom_file, rom_file + ".bak")
 
     with open(rom_file, "rb+") as rom:
-        for offset, data in read(ips_file):
-            rom.seek(offset)
-            rom.write(data)
+        try:
+            for offset, data in read(ips_file):
+                rom.seek(offset)
+                rom.write(data)
+                echo(f"{len(data)} bytes overwritten at offset {hex(offset)}")
+        except StopIteration:
+            exit(1)
+
+        return "Done."
 
 
 def patch(rom_file, ips_file, backup):
@@ -78,16 +87,16 @@ def patch(rom_file, ips_file, backup):
 
         """
         The file contains several patches, each patch is laid out thus:
-        
+
         - 3-digit base-256 location in the ROM where the patch should go
         - 2-digit base-256 length of the patch
         - The patch
-        
+
         Without any whitespace or other separators
-        
+
         If the length of the patch is found to be 0, this has a special meaning: to copy a certain byte some number
         of times. This is useful for setting certain locations to null, for example. This has a different format:
-        
+
         - 3-digit base-256 location in the ROM to copy the data (as above)
         - Two null bytes (which evaluate to 00)
         - 2-digit base-256 number of times the byte should be copied

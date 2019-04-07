@@ -37,5 +37,3 @@ def restore_rom(rom):
 @click.option("--ips", "-i", required=True, prompt=True)
 def patches(ips):
     PyPS.show_patches(ips)
-
-
