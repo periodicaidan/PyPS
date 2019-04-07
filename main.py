@@ -9,9 +9,9 @@ def ips_patch():
 
 
 @ips_patch.command("patch")
-@click.option("--rom", "-r", required=True, prompt="Path to ROM")
-@click.option("--ips", "-i", required=True, prompt="Path to IPS")
-@click.option("--backup/--no-backup", "-b/-B", default=True)
+@click.option("--rom", "-r", required=True, prompt="Path to ROM", help="Path to the ROM file to patch")
+@click.option("--ips", "-i", required=True, prompt="Path to IPS", help="Path to the IPS file to use for patching")
+@click.option("--backup/--no-backup", "-b/-B", default=True, help="Whether or not to backup the original ROM file (backs up by default)")
 def patch(rom, ips, backup=True):
     """
     Apply an IPS patch file to a ROM file
@@ -26,7 +26,7 @@ def patch(rom, ips, backup=True):
 
 
 @ips_patch.command("restore")
-@click.option("--rom", "-r", required=True, prompt="Path to ROM")
+@click.option("--rom", "-r", required=True, prompt="Path to ROM", help="Path to the ROM file to restore")
 def restore_rom(rom):
     """
     Revert a ROM file to its original form
@@ -40,9 +40,9 @@ def restore_rom(rom):
 
 
 @ips_patch.command("patches")
-@click.option("--ips", "-i", required=True, prompt=True)
+@click.option("--ips", "-i", required=True, prompt=True, help="Path to the IPS file to list")
 def patches(ips):
     """
-    Show the patches in an IPS file 
+    Show the patches in an IPS file
     """
     PyPS.show_patches(ips)

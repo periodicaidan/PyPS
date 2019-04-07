@@ -74,7 +74,8 @@ def patch(rom_file, ips_file, backup):
         return f"ROM file {rom_file} is not readable and/or writeable. Please set the appropriate permissions."
 
     if backup:
-        shutil.copyfile(rom_file, rom_file + ".bak")
+        if not os.access(rom_file + ".bak", os.F_OK):
+            shutil.copyfile(rom_file, rom_file + ".bak")
 
     with open(rom_file, "rb+") as rom:
         try:
