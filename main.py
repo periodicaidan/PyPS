@@ -17,8 +17,8 @@ def patch(rom, ips, backup=True):
     Apply an IPS patch file to a ROM file
     """
     if not backup:
-        click.confirm(f"The ROM {rom} will be partly overwritten; this process cannot be undone and it is *highly* "
-                      f"recommended that you make a backup. Are you sure you wish to proceed without one?",
+        click.confirm("The ROM %s will be partly overwritten; this process cannot be undone and it is *highly* "
+                      f"recommended that you make a backup. Are you sure you wish to proceed without one?" % rom,
                       abort=True)
 
     info = PyPS.patch(rom, ips, backup)
@@ -31,12 +31,12 @@ def restore_rom(rom):
     """
     Revert a ROM file to its original form
     """
-    if os.access(f"{rom}.bak", os.F_OK):
+    if os.access("%s.bak" % rom, os.F_OK):
         os.remove(rom)
-        os.rename(f"{rom}.bak", rom)
-        click.echo(f"Restored {rom} from backup.")
+        os.rename("%s.bak" % rom, rom)
+        click.echo("Restored %s from backup." % rom)
     else:
-        click.echo(f"No (writable) backup found for {rom}.")
+        click.echo("No (writable) backup found for %s." % rom)
 
 
 @ips_patch.command("patches")

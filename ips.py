@@ -5,21 +5,21 @@ import shutil
 
 def read(ips_file):
     if not os.access(ips_file, os.F_OK):
-        print(f"IPS file {ips_file} does not exist")
+        echo("IPS file %s does not exist" % ips_file)
         raise StopIteration
 
     if not (os.access(ips_file, os.R_OK) and os.access(ips_file, os.W_OK)):
-        print(f"{ips_file} is not readable and writable. Please set the appropriate permissions.")
+        echo("%s is not readable and writable. Please set the appropriate permissions." % ips_file)
         raise StopIteration
 
     if ips_file.split(".")[-1] != "ips":
-        print(f"{ips_file} is not an IPS file (proper extension is .ips)")
+        echo("%s is not an IPS file (proper extension is .ips)" % ips_file)
         raise StopIteration
 
     with open(ips_file, "rb+") as ips:
         header = ips.read(5)
         if header != b"PATCH":
-            print(f"IPS file header invalid: {header}")
+            echo("IPS file header invalid: %s" % header)
             raise StopIteration
 
         """
@@ -68,21 +68,21 @@ def read(ips_file):
 
 def patch(rom_file, ips_file, backup):
     if not os.access(rom_file, os.F_OK):
-        return f"ROM file {rom_file} not found"
+        return "ROM file %s not found" % rom_file
 
     if not (os.access(rom_file, os.R_OK) and os.access(os.W_OK)):
-        return f"ROM file {rom_file} is not readable and/or writeable. Please set the appropriate permissions."
+        return "ROM file is not readable and/or writeable. Please set the appropriate permissions." % rom_file
 
     if backup:
         if not os.access(rom_file + ".bak", os.F_OK):
-            shutil.copyfile(rom_file, rom_file + ".bak")
+            shutil.copyfile(rom_file, "%s.bak" % rom_file)
 
     with open(rom_file, "rb+") as rom:
         try:
             for offset, data in read(ips_file):
                 rom.seek(offset)
                 rom.write(data)
-                echo(f"{len(data)} bytes overwritten at offset {hex(offset)}")
+                echo("%s bytes overwritten at offset %s" % (len(data), hex(offset)))
         except StopIteration:
             exit(1)
 
@@ -91,12 +91,12 @@ def patch(rom_file, ips_file, backup):
 
 def show_patches(ips_file):
     with open(ips_file, "rb+") as ips:
-        echo(f"Patches for {ips_file}")
+        echo("Patches for %s" % ips_file)
 
         num_patches = 0
         for offset, data in read(ips_file):
             num_patches += 1
-            echo(f"Offset: {hex(offset)}\nPatch:")
+            echo("Offset %s" % hex(offset))
             length = len(data)
             i = 0
             while i < length:
@@ -105,6 +105,6 @@ def show_patches(ips_file):
                     i = i + 1
                     if i >= length: break
 
-                print()
-            print()
-        print(f"Total patches: {num_patches}")
+                echo()
+            echo()
+        echo("Total patches: %s" % num_patches)
